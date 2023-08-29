@@ -8,7 +8,7 @@ func.func @batch_matmul(%A: memref<1x64x576xf32>, %B: memref<1x576x3136xf32>, %C
 transform.sequence failures(propagate) {
 ^bb1(%module_op: !pdl.operation):
   %0 = transform.structured.match ops{["linalg.batch_matmul"]} in %module_op : (!pdl.operation) -> !pdl.operation
-  %1, %loops:3 = transform.structured.tile %0 [0, 4, 32, 8] : (!pdl.operation) -> (!pdl.operation, !pdl.operation, !pdl.operation, !pdl.operation)
+  %1, %loops:3 = transform.structured.tile %0 [0, 4, 32, 8] {interchange = [0, 1, 2]} : (!pdl.operation) -> (!pdl.operation, !pdl.operation, !pdl.operation, !pdl.operation)
   %2 = get_closest_isolated_parent %1 : (!pdl.operation) -> !pdl.operation
   transform.structured.vectorize %2
   %b = transform.bufferization.one_shot_bufferize layout{IdentityLayoutMap}
